@@ -34,13 +34,20 @@ quiz.addEventListener('click', function(e) {
 // on button click, quiz div innerHTML receives info from next object in allQuestions array
 
 var next = function() {
+	if (index > -1) {
+		var t = answered()
+		if (t == false) {
+			return;
+		}
+	}
+
 	index += 1;
 
 	// if index equals last object's index in all Questions array, show scores
 	if (index == allQuestions.length) {
 		showScores(index);
 	} else {  // else show question
-		quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
+			quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
 
 		// add choices (radio inputs)
 		for (var i = 0; i < allQuestions[index]["choices"].length; i++) {
@@ -71,13 +78,28 @@ var showScores = function(i) {
 	}
 
 	quiz.innerHTML += correct + "/" + total;
+}
 
-	// then compare allQuestions[index]["answer"] == allQuestions[index]["correctAnswer"]
+button = document.getElementById('button');
+if (button)
+button.addEventListener('click', next);
+
+
+// client-side data validation:
+// returns a Boolean after checking whether question has been answered
+// by checking whether current question object in allQuestions array contains 'answer' key
+var answered = function () {
+	if ('answer' in allQuestions[index]) {
+		return true;
+		console.log('Answered');
+	} else {
+		return false;
+	}
 }
 
 
-button = document.getElementById('button');
-button.addEventListener('click', next);
+
+
 
 
 
