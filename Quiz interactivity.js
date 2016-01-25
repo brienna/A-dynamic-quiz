@@ -32,16 +32,15 @@ quiz.addEventListener('click', function(e) {
 
 
 // on button click, quiz div innerHTML receives info from next object in allQuestions array
-
 var next = function() {
 	if (index > -1) {
-		var t = answered()
-		if (t == false) {
+		if (!answered()) {
 			return;
 		}
 	}
 
 	index += 1;
+	console.log(index);
 
 	// if index equals last object's index in all Questions array, show scores
 	if (index == allQuestions.length) {
@@ -55,6 +54,10 @@ var next = function() {
 			choice.type = 'radio';
 			choice.name = 'choices';
 			choice.value = i;
+
+			if ('answer' in allQuestions[index] && choice.value == allQuestions[index]['answer']) {
+				choice.checked = "checked";
+			}
 			
 			quiz.appendChild(choice);
 			quiz.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
@@ -64,9 +67,43 @@ var next = function() {
 };
 
 
+// on backButton click, quiz div iterates backward from current allQuestions object to previous 
+// and selects the button with the same index number as the answer 
+var back = function() {
+	console.log(index);
+	if (index < 0) {
+		return;
+	}
+
+	index -= 1;
+
+	quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
+
+	// add choices (radio inputs)
+	for (var i = 0; i < allQuestions[index]["choices"].length; i++) {
+		choice = document.createElement('input');
+		choice.type = 'radio';
+		choice.name = 'choices';
+		choice.value = i;
+
+		if ('answer' in allQuestions[index] && choice.value == allQuestions[index]['answer']) {
+			choice.checked = "checked";
+		}
+		
+		quiz.appendChild(choice);
+		quiz.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
+		quiz.appendChild(document.createElement('br'));
+	}
+
+	
+	
+};
+
+
 // shows score sheet after the end of allQuestions iteration
 var showScores = function(i) {
-	button.remove();
+	nextButton.remove();
+	backButton.remove();
 	quiz.innerHTML = "SCORE:  ";
 
 	var total = allQuestions.length;
@@ -78,22 +115,26 @@ var showScores = function(i) {
 	}
 
 	quiz.innerHTML += correct + "/" + total;
-}
+};
 
-button = document.getElementById('button');
-if (button)
-button.addEventListener('click', next);
+nextButton = document.getElementById('nextButton');
+nextButton.addEventListener('click', next);
+
+backButton = document.getElementById('backButton');
+backButton.addEventListener('click', back);
 
 
 // client-side data validation:
 // returns a Boolean after checking whether question has been answered
 // by checking whether current question object in allQuestions array contains 'answer' key
 var answered = function () {
-	if ('answer' in allQuestions[index]) {
-		return true;
-		console.log('Answered');
-	} else {
-		return false;
+	if (allQuestions) {
+		if ('answer' in allQuestions[index]) {
+			return true;
+			console.log('Answered');
+		} else {
+			return false;
+		}
 	}
 }
 
