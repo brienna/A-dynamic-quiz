@@ -15,6 +15,7 @@ httpRequest.onreadystatechange = function() {
 		console.log(' There was a problem with the request');
 		return;
 	}
+	console.log('The request succeeded');
 	allQuestions = JSON.parse(httpRequest.responseText);
 };
 
@@ -74,13 +75,13 @@ var next = function() {
 // on backButton click, quiz div iterates backward from current allQuestions object to previous 
 // and selects the button with the same index number as the answer 
 var back = function() {
-	console.log(index);
-	if (index < 0) {
-		console.log('This is the first question. Cannot go further back.')
+	if (index <= 0) { // if back button becomes available only after 1st question appears, replace with ==
+		console.log(index + ' Cannot go further back.')
 		return;
 	}
 
 	index -= 1;
+	console.log(index);
 
 	quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
 
