@@ -1,26 +1,30 @@
+var httpRequest = new XMLHttpRequest(),
+	method = 'GET',
+	url = 'questions.json';
 
-var allQuestions = [{question: "What is the capital of the Czech Republic?", 
-					choices: ["Skopje", "Budapest", "Prague", "Bucharest"], 
-					correctAnswer: 2},
+// process the server response
+httpRequest.onreadystatechange = function() {
+	console.log('fired');
+	// check state of request
+	if (httpRequest.readyState !== XMLHttpRequest.DONE) {
+		console.log('The request is still not ready');
+		return;
+	}
+	// check HTTP status code of response
+	if (httpRequest.status !== 200) {
+		console.log(' There was a problem with the request');
+		return;
+	}
+	allQuestions = JSON.parse(httpRequest.responseText);
+};
 
-					{question: "When was the Declaration of Independence signed?",
-					choices: ["1492", "1776", "1812", "1791"],
-					correctAnswer: 1},
+httpRequest.open(method, url, true);
+httpRequest.send(null);
 
-					{question: "How many wives did King Henry VIII have?",
-					choices: ["8", "2", "0", "6"],
-					correctAnswer: 3},
 
-					{question: "Who was the first man in space?",
-					choices: ["John Glenn", "Yuri Gagarin", "Neil Armstrong", "Buzz Aldrin"],
-					correctAnswer: 1},
-
-					{question: "Which star in the Carl Sagan novel 'Contact' showed signs of extraterrestrial life?",
-					choices: ["Sun", "Betelguese", "Vega"],
-					correctAnswer: 2}];
- 
-var index = -1;
-var quiz = document.getElementById("quiz");
+var allQuestions,
+	index = -1;
+	quiz = document.getElementById("quiz");
 
 // assigns value of chosen radio button to answer property on current question object in allQuestions array
 quiz.addEventListener('click', function(e) {
@@ -72,6 +76,7 @@ var next = function() {
 var back = function() {
 	console.log(index);
 	if (index < 0) {
+		console.log('This is the first question. Cannot go further back.')
 		return;
 	}
 
