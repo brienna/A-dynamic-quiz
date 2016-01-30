@@ -1,26 +1,8 @@
-var httpRequest = new XMLHttpRequest(),
-	method = 'GET',
-	url = 'questions.json';
+var url = 'questions.json';
 
-// process the server response
-httpRequest.onreadystatechange = function() {
-	console.log('fired');
-	// check state of request
-	if (httpRequest.readyState !== XMLHttpRequest.DONE) {
-		console.log('The request is still not ready');
-		return;
-	}
-	// check HTTP status code of response
-	if (httpRequest.status !== 200) {
-		console.log(' There was a problem with the request');
-		return;
-	}
-	console.log('The request succeeded');
-	allQuestions = JSON.parse(httpRequest.responseText);
-};
-
-httpRequest.open(method, url, true);
-httpRequest.send(null);
+$.getJSON(url, function(result) {
+	allQuestions = result;
+});
 
 
 var allQuestions,
