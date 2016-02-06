@@ -7,11 +7,22 @@
 
 	<body>
 
+		<form id='credentials'>
+			<div class="field">
+				<label for="username">Username:</label>
+				<input type="text" id="username" name="username" />
+			</div>
+			<div class="field">
+				 <button type="submit">Send</button>
+			</div>
+		</form>
+
+
 		<div id="quiz">
-		The QUIZ
 		</div>
-		<button id="backButton">Back</button>
-		<button id="nextButton">Next</button>
+
+		<button id="backButton" class='hidden'>Back</button>
+		<button id="nextButton" class='hidden'>Next</button>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script type="text/javascript" src="Quiz interactivity.js"></script>

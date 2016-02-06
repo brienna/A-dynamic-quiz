@@ -1,3 +1,48 @@
+
+// welcome the user to the quiz!
+welcome();
+
+function askForName() {
+	// checks for localStorage support
+	if (localStorage) {
+		// add event listener for form submission
+		quiz.innerHTML = "";
+		var form = document.getElementById('credentials');
+		form.style.display = 'block';
+		form.addEventListener('submit', function(e) {
+			// prevents actual form submission
+			e.preventDefault();
+			// get value of username field
+			var username = document.getElementById('username').value;
+			// save name in localStorage
+			localStorage.setItem('username', username);
+			form.style.display = "none";
+			welcome();
+		});
+	} 
+}
+
+function welcome() {
+	var username = localStorage.getItem('username');
+	if (username != "undefined" && username != null) {
+		quiz.innerHTML = "Hello " + username + '!';
+		changeName = document.createElement('button');
+		changeName.style.display = 'inline';
+		quiz.appendChild(changeName);
+		changeName.textContent = "change Name";
+		changeName.addEventListener('click', askForName);
+		// show button for Next
+		nextButton.style.display = 'inline';
+	} else {
+		askForName();
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+
 var url = 'questions.json';
 
 $.getJSON(url, function(result) {
@@ -20,6 +65,12 @@ quiz.addEventListener('click', function(e) {
 
 // on button click, quiz div innerHTML receives info from next object in allQuestions array
 var next = function() {
+	// toggle backButton visibility
+	if (index > -1 && answered()) {
+		backButton.style.display = 'inline';
+	}
+
+	// prevents user from proceeding without answering
 	if (index > -1) {
 		if (!answered()) {
 			return;
@@ -57,13 +108,13 @@ var next = function() {
 // on backButton click, quiz div iterates backward from current allQuestions object to previous 
 // and selects the button with the same index number as the answer 
 var back = function() {
-	if (index <= 0) { // if back button becomes available only after 1st question appears, replace with ==
-		console.log(index + ' Cannot go further back.')
-		return;
-	}
-
 	index -= 1;
 	console.log(index);
+
+	// hide backButton if cannot go further back
+	if (index == 0) {
+		backButton.style.display = 'none';
+	}
 
 	quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
 
@@ -125,6 +176,11 @@ var answered = function () {
 		}
 	}
 }
+
+
+
+
+
 
 
 
