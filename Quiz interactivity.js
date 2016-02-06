@@ -24,7 +24,7 @@ function askForName() {
 
 function welcome() {
 	var username = localStorage.getItem('username');
-	if (username != "undefined" && username != null) {
+	if (username != null && username.trim()) {
 		quiz.innerHTML = "Hello " + username + '!';
 		changeName = document.createElement('button');
 		changeName.style.display = 'inline';
