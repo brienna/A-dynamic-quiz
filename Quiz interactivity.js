@@ -4,6 +4,7 @@ welcome();
 
 function askForName() {
 	// checks for localStorage support
+	nextButton.style.display = 'none';
 	if (localStorage) {
 		// add event listener for form submission
 		quiz.innerHTML = "";
@@ -19,7 +20,7 @@ function askForName() {
 			form.style.display = "none";
 			welcome();
 		});
-	} 
+	}
 }
 
 function welcome() {
