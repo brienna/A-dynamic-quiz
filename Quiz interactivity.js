@@ -1,5 +1,9 @@
 
-// welcome the user to the quiz!
+var quiz = {
+	element: document.getElementById('quiz'),
+}
+
+// welcome the user to the quiz.element!
 welcome();
 
 function askForName() {
@@ -7,7 +11,7 @@ function askForName() {
 	nextButton.style.display = 'none';
 	if (localStorage) {
 		// add event listener for form submission
-		quiz.innerHTML = "";
+		quiz.element.innerHTML = "";
 		var form = document.getElementById('credentials');
 		form.style.display = 'block';
 		form.addEventListener('submit', function(e) {
@@ -26,10 +30,10 @@ function askForName() {
 function welcome() {
 	var username = localStorage.getItem('username');
 	if (username != null && username.trim()) {
-		quiz.innerHTML = "Hello " + username + '!';
+		quiz.element.innerHTML = "Hello " + username + '!';
 		changeName = document.createElement('button');
 		changeName.style.display = 'inline';
-		quiz.appendChild(changeName);
+		quiz.element.appendChild(changeName);
 		changeName.textContent = "change Name";
 		changeName.addEventListener('click', askForName);
 		// show button for Next
@@ -50,13 +54,13 @@ $.getJSON(url, function(result) {
 	allQuestions = result;
 });
 
-
 var allQuestions,
 	index = -1;
-	quiz = document.getElementById("quiz");
+
+
 
 // assigns value of chosen radio button to answer property on current question object in allQuestions array
-quiz.addEventListener('click', function(e) {
+quiz.element.addEventListener('click', function(e) {
 	if (e.target.tagName.toUpperCase() === "INPUT") {
 		var value = e.target.value;
 		allQuestions[index]['answer'] = value;		
@@ -64,7 +68,7 @@ quiz.addEventListener('click', function(e) {
 });
 
 
-// on button click, quiz div innerHTML receives info from next object in allQuestions array
+// on button click, quiz.element div innerHTML receives info from next object in allQuestions array
 var next = function() {
 	// toggle backButton visibility
 	if (index > -1 && answered()) {
@@ -85,28 +89,13 @@ var next = function() {
 	if (index == allQuestions.length) {
 		showScores(index);
 	} else {  // else show question
-			quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
-
-		// add choices (radio inputs)
-		for (var i = 0; i < allQuestions[index]["choices"].length; i++) {
-			choice = document.createElement('input');
-			choice.type = 'radio';
-			choice.name = 'choices';
-			choice.value = i;
-
-			if ('answer' in allQuestions[index] && choice.value == allQuestions[index]['answer']) {
-				choice.checked = "checked";
-			}
-			
-			quiz.appendChild(choice);
-			quiz.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
-			quiz.appendChild(document.createElement('br'));
-		}
+		quiz.element.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
+		showChoices();
 	}
 };
 
 
-// on backButton click, quiz div iterates backward from current allQuestions object to previous 
+// on backButton click, quiz.element div iterates backward from current allQuestions object to previous 
 // and selects the button with the same index number as the answer 
 var back = function() {
 	index -= 1;
@@ -115,10 +104,14 @@ var back = function() {
 	// hide backButton if cannot go further back
 	if (index == 0) {
 		backButton.style.display = 'none';
+	} else {
+		quiz.element.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
+		showChoices();
 	}
+};
 
-	quiz.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
 
+function showChoices() {
 	// add choices (radio inputs)
 	for (var i = 0; i < allQuestions[index]["choices"].length; i++) {
 		choice = document.createElement('input');
@@ -130,21 +123,18 @@ var back = function() {
 			choice.checked = "checked";
 		}
 		
-		quiz.appendChild(choice);
-		quiz.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
-		quiz.appendChild(document.createElement('br'));
+		quiz.element.appendChild(choice);
+		quiz.element.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
+		quiz.element.appendChild(document.createElement('br'));
 	}
-
-	
-	
-};
+}
 
 
 // shows score sheet after the end of allQuestions iteration
 var showScores = function(i) {
 	nextButton.remove();
 	backButton.remove();
-	quiz.innerHTML = "SCORE:  ";
+	quiz.element.innerHTML = "SCORE:  ";
 
 	var total = allQuestions.length;
 	var correct = 0;
@@ -154,7 +144,7 @@ var showScores = function(i) {
 		}
 	}
 
-	quiz.innerHTML += correct + "/" + total;
+	quiz.element.innerHTML += correct + "/" + total;
 };
 
 nextButton = document.getElementById('nextButton');
