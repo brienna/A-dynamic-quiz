@@ -1,26 +1,20 @@
 
-var url = 'questions.json';
-
-var allQuestions,
-	index = -1;
-
-$.getJSON(url, function(result) {
-	allQuestions = result;
-});
-
-
-
 var quiz = {
+	index: -1,
+	url_questions: 'questions.json',
+	allQuestions: [],
 	element: document.getElementById('quiz'),
 	nextButton: document.getElementById('nextButton'),
 	backButton: document.getElementById('backButton'),
 	nameChangeButton: document.getElementById('nameChangeButton'),
 
+	getQuestions: function(callback) {
+  		$.getJSON(quiz.url_questions, callback);
+	},
+
 	checkName: function(name) {
-		// check if localStorage exists
-		// check localStorage for valid name
-		// if valid name exists, welcome user
-		// else, ask user for name
+		// if localStorage exists, retrieve name
+		// if name is valid, welcome user, else ask user for name
 		if (localStorage) {
 			var name = localStorage.getItem('name');
 			if (name != null && name.trim()) {
@@ -28,10 +22,13 @@ var quiz = {
 			} else {
 				quiz.askForName();
 			}
+		} else {
+			// fallback action if localStorage doesn't exist
 		}
 	},
 
 	welcome: function(name) {
+		// display welcome greeting for user
 		quiz.clearQuiz();
 		var greeting = document.createTextNode('Hello ' + name + '!');
 		quiz.element.appendChild(greeting);
@@ -49,80 +46,76 @@ var quiz = {
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();  // prevents actual form submission
 			var name = document.getElementById('username').value;
-			localStorage.setItem('name', name); 
+			localStorage.setItem('name', name);
 			form.style.display = "none";
 			quiz.checkName(name);
 		});
 	},
 
-	showChoices: function() {
+	showQuestion: function() {
+		quiz.element.innerHTML = "<h1>" + quiz.allQuestions[quiz.index]["question"] + "</h1>";
+
 		// create choices as radio inputs
-		for (var i = 0; i < allQuestions[index]["choices"].length; i++) {
+		for (var i = 0; i < quiz.allQuestions[quiz.index]["choices"].length; i++) {
 			choice = document.createElement('input');
 			choice.type = 'radio';
 			choice.name = 'choices';
 			choice.value = i;
 
 			// if user has chosen current choice as answer, mark current choice
-			if ('answer' in allQuestions[index] && choice.value == allQuestions[index]['answer']) {
+			if ('answer' in quiz.allQuestions[quiz.index] && choice.value == quiz.allQuestions[quiz.index]['answer']) {
 				choice.checked = "checked";
 			}
 
 			// append current choice to quiz
 			quiz.element.appendChild(choice);
-			quiz.element.appendChild(document.createTextNode(allQuestions[index]['choices'][i]));
+			quiz.element.appendChild(document.createTextNode(quiz.allQuestions[quiz.index]['choices'][i]));
 			quiz.element.appendChild(document.createElement('br'));
+		}
+
+		console.log(quiz.index);
+
+		// show backButton if after first question, else hide
+		if (quiz.index > 0) {  
+			quiz.backButton.style.display = 'inline';
+		} else { 
+			quiz.backButton.style.display = 'none';
 		}
 	},
 
 	next: function() {
-		quiz.nameChangeButton.style.display = 'none';
-		quiz.nextButton.style.display = 'inline';
-
-		if (index > -1 && quiz.answered(index)) {
-			quiz.backButton.style.display = 'inline';
-		}
+		quiz.nameChangeButton.style.display = 'none'; // need to find a better place for this
 
 		// prevent user from proceeding without answering
-		if (index > -1) {
-			if (!quiz.answered(index)) {
+		if (quiz.index > -1) {
+			if (!quiz.answered()) {
 				return;
 			}
-		}
+		} 
 
-		index += 1;
-		console.log(index);
+		quiz.index += 1;
 
-		// show scores if index equals last object's index in all Questions array
-		if (index == allQuestions.length) {
-			quiz.showScores(); // send index as argument? 
-		} else {  // else show question
-			quiz.element.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
-			quiz.showChoices();
+		// if last question is currently showing, show scores
+		if (quiz.index == quiz.allQuestions.length) {
+			quiz.showScores(); 
+		} else {  
+			quiz.showQuestion();
 		}
 	},
 
 	back: function() {
-		index -= 1;
-		console.log(index);
-
-		// hide backButton if cannot go further back
-		if (index == 0) {
-			quiz.backButton.style.display = 'none';
-		} else {
-			quiz.element.innerHTML = "<h1>" + allQuestions[index]["question"] + "</h1>";
-			quiz.showChoices();
-		}
+		quiz.index -= 1;
+		quiz.showQuestion();
 	},
 
 	showScores: function() {
 		quiz.clearQuiz();
 		quiz.element.innerHTML = "SCORE: ";
 
-		var total = allQuestions.length;
+		var total = quiz.allQuestions.length;
 		var correct = 0;
-		for (var question = 0; question < allQuestions.length; question++) {
-			if (allQuestions[question]["answer"] == allQuestions[question]["correctAnswer"]) {
+		for (var question = 0; question < quiz.allQuestions.length; question++) {
+			if (quiz.allQuestions[question]["answer"] == quiz.allQuestions[question]["correctAnswer"]) {
 				correct += 1;
 			}
 		}
@@ -133,16 +126,17 @@ var quiz = {
 	clearQuiz: function() {
 		quiz.nameChangeButton.style.display = 'none';
 		quiz.nextButton.style.display = 'none';
+		quiz.backButton.style.display = 'none';
 		while (quiz.element.firstChild) {
 			quiz.element.removeChild(quiz.element.firstChild);
 		}
-	}, 
+	},
 
 	// client-side data validation:
-	// return a Boolean after checking whether question has been answered
-	answered: function(index) {
-		if (allQuestions) {
-			if ('answer' in allQuestions[index]) {
+	// check whether question has been answered and return a Boolean
+	answered: function() {
+		if (quiz.allQuestions) {
+			if ('answer' in quiz.allQuestions[quiz.index]) {
 				return true;
 				console.log('Answered');
 			} else {
@@ -153,24 +147,26 @@ var quiz = {
 };
 
 
+
+// callback function
+quiz.getQuestions(function(questions) {
+	quiz.allQuestions = questions;
+});
+
 // assigns value of chosen radio button to answer property 
 // on current question object in allQuestions array
 quiz.element.addEventListener('click', function(e) {
 	if (e.target.tagName.toUpperCase() === "INPUT") {
 		var value = e.target.value;
-		allQuestions[index]['answer'] = value;		
+		quiz.allQuestions[quiz.index]['answer'] = value;		
 	}
 });
 
 quiz.nextButton.addEventListener('click', quiz.next);
 quiz.backButton.addEventListener('click', quiz.back);
 
-
 // check username to then either welcome user or ask user for name
 quiz.checkName();
-
-
-
 
 
 
