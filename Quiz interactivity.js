@@ -3,7 +3,10 @@ var quiz = {
 	element: document.getElementById('quiz'),
 
 	checkName: function(name) {
-		// if valid name exists in localStorage, welcome user, else ask for name
+		// check if localStorage exists
+		// check localStorage for valid name
+		// if valid name exists, welcome user
+		// else, ask user for name
 		if (localStorage) {
 			var name = localStorage.getItem('name');
 			if (name != null && name.trim()) {
@@ -15,18 +18,21 @@ var quiz = {
 	},
 
 	welcome: function(name) {
-		quiz.element.innerHTML = "Hello " + name + '!';
-		nameChangeButton = document.createElement('button');
-		nameChangeButton.style.display = 'inline';
-		quiz.element.appendChild(nameChangeButton);
-		nameChangeButton.textContent = "change Name";
+		quiz.clearQuiz();
+		
+		var greeting = document.createTextNode('Hello ' + name + '!');
+		quiz.element.appendChild(greeting);
+		var nameChangeButton = document.getElementById('nameChangeButton');
+		var buttonText = "Not " + name + "?";
+		nameChangeButton.textContent = buttonText;
 		nameChangeButton.addEventListener('click', quiz.askForName);
-		nextButton.style.display = 'inline';  // show nextButton
+		nameChangeButton.style.display = 'block';
+		nextButton.style.display = 'inline';
 	},
 
 	askForName: function() {
-		nextButton.style.display = 'none';  // hide nextButton
-		quiz.element.innerHTML = "";
+		quiz.clearQuiz();
+
 		var form = document.getElementById('nameForm');
 		form.style.display = 'block';
 		form.addEventListener('submit', function(e) {
@@ -37,6 +43,14 @@ var quiz = {
 			form.style.display = "none";
 			quiz.checkName(name);
 		});
+	},
+
+	clearQuiz: function() {
+		nameChangeButton.style.display = 'none';
+		nextButton.style.display = 'none';
+		while (quiz.element.firstChild) {
+			quiz.element.removeChild(quiz.element.firstChild);
+		}
 	},
 };
 
@@ -56,8 +70,6 @@ $.getJSON(url, function(result) {
 var allQuestions,
 	index = -1;
 
-
-
 // assigns value of chosen radio button to answer property on current question object in allQuestions array
 quiz.element.addEventListener('click', function(e) {
 	if (e.target.tagName.toUpperCase() === "INPUT") {
@@ -69,6 +81,9 @@ quiz.element.addEventListener('click', function(e) {
 
 // on button click, quiz.element div innerHTML receives info from next object in allQuestions array
 var next = function() {
+	quiz.clearQuiz();
+	nextButton.style.display = 'inline';
+
 	// toggle backButton visibility
 	if (index > -1 && answered()) {
 		backButton.style.display = 'inline';
