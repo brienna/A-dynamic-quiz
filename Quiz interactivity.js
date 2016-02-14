@@ -81,18 +81,20 @@ var quiz = {
 		} else { 
 			quiz.backButton.style.display = 'none';
 		}
+
+		// always show nextButton
+		quiz.nextButton.style.display = 'inline';
 	},
 
 	next: function() {
-		quiz.nameChangeButton.style.display = 'none'; // need to find a better place for this
-
 		// prevent user from proceeding without answering
 		if (quiz.index > -1) {
 			if (!quiz.answered()) {
 				return;
 			}
-		} 
+		}
 
+		quiz.clearQuiz();
 		quiz.index += 1;
 
 		// if last question is currently showing, show scores
