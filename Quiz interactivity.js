@@ -1,48 +1,47 @@
 
 var quiz = {
 	element: document.getElementById('quiz'),
-}
 
-// welcome the user to the quiz.element!
-welcome();
+	checkName: function(name) {
+		// if valid name exists in localStorage, welcome user, else ask for name
+		if (localStorage) {
+			var name = localStorage.getItem('name');
+			if (name != null && name.trim()) {
+				quiz.welcome(name);
+			} else {
+				quiz.askForName();
+			}
+		}
+	},
 
-function askForName() {
-	// checks for localStorage support
-	nextButton.style.display = 'none';
-	if (localStorage) {
-		// add event listener for form submission
+	welcome: function(name) {
+		quiz.element.innerHTML = "Hello " + name + '!';
+		nameChangeButton = document.createElement('button');
+		nameChangeButton.style.display = 'inline';
+		quiz.element.appendChild(nameChangeButton);
+		nameChangeButton.textContent = "change Name";
+		nameChangeButton.addEventListener('click', quiz.askForName);
+		nextButton.style.display = 'inline';  // show nextButton
+	},
+
+	askForName: function() {
+		nextButton.style.display = 'none';  // hide nextButton
 		quiz.element.innerHTML = "";
-		var form = document.getElementById('credentials');
+		var form = document.getElementById('nameForm');
 		form.style.display = 'block';
 		form.addEventListener('submit', function(e) {
-			// prevents actual form submission
-			e.preventDefault();
-			// get value of username field
-			var username = document.getElementById('username').value;
+			e.preventDefault();  // prevents actual form submission
+			var name = document.getElementById('username').value;
 			// save name in localStorage
-			localStorage.setItem('username', username);
+			localStorage.setItem('name', name);
 			form.style.display = "none";
-			welcome();
+			quiz.checkName(name);
 		});
-	}
-}
+	},
+};
 
-function welcome() {
-	var username = localStorage.getItem('username');
-	if (username != null && username.trim()) {
-		quiz.element.innerHTML = "Hello " + username + '!';
-		changeName = document.createElement('button');
-		changeName.style.display = 'inline';
-		quiz.element.appendChild(changeName);
-		changeName.textContent = "change Name";
-		changeName.addEventListener('click', askForName);
-		// show button for Next
-		nextButton.style.display = 'inline';
-	} else {
-		askForName();
-	}
-}
-
+// check username to then either welcome user or ask user for name
+quiz.checkName();
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
