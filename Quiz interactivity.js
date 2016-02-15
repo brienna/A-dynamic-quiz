@@ -58,9 +58,9 @@ var quiz = {
 
 		// create choices as radio inputs
 		for (var i = 0; i < quiz.allQuestions[quiz.index]["choices"].length; i++) {
-			choice = document.createElement('input');
+			var choice = document.createElement('input');
 			choice.type = 'radio';
-			choice.name = 'choices';
+			choice.className = 'choices';
 			choice.value = i;
 
 			// if user has chosen current choice as answer, mark current choice
@@ -84,6 +84,7 @@ var quiz = {
 		}
 
 		// show nextButton if user pressed backButton & has not returned to the question he left
+		console.log(quiz.index, bookmark)
 		if (quiz.index < bookmark) {
 			quiz.nextButton.style.display = 'inline';
 		}
@@ -144,7 +145,6 @@ var quiz = {
 		if (quiz.allQuestions) {
 			if ('answer' in quiz.allQuestions[quiz.index]) {
 				return true;
-				console.log('Answered');
 			} else {
 				return false;
 			}
@@ -164,8 +164,31 @@ quiz.getQuestions(function(questions) {
 quiz.element.addEventListener('click', function(e) {
 	if (e.target.tagName.toUpperCase() === "INPUT") {
 		var value = e.target.value;
-		quiz.allQuestions[quiz.index]['answer'] = value;	
-		quiz.next();	
+		quiz.allQuestions[quiz.index]['answer'] = value;
+
+		// hide choices with 50 millisec delays
+		choices = document.getElementsByClassName('choices');
+
+		function timeout(i) {
+			setTimeout(hideChoices, 100, i);
+
+			function hideChoices() {
+				if (i == value) {
+					// do nothing
+				} else {
+					quiz.element.removeChild(choices[i].nextSibling);
+					quiz.element.removeChild(choices[i]);
+				}
+
+				i -= 1
+				if (i >= 0) {
+					timeout(i);  
+				}
+			}
+		}
+
+		timeout(quiz.allQuestions[quiz.index]["choices"].length - 1);
+		setTimeout(quiz.next, 1000);  // show next question after 500 millisec
 	}
 });
 
@@ -173,6 +196,8 @@ quiz.backButton.addEventListener('click', quiz.back);
 
 // check username to then either welcome user or ask user for name
 quiz.checkName();
+
+
 
 
 

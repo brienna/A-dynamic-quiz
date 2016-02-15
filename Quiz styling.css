@@ -1,9 +1,9 @@
 body {
-	background-color: black;
+	background-color: white;
 }
 
 div, form {
-	color: pink;
+	color: gray;
 
 	/* To center the form on the page */
 	margin: 0 auto;
