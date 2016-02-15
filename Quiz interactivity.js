@@ -37,6 +37,7 @@ var quiz = {
 		quiz.nameChangeButton.addEventListener('click', quiz.askForName);
 		quiz.nameChangeButton.style.display = 'block';
 		quiz.nextButton.style.display = 'inline';
+		quiz.nextButton.addEventListener('click', quiz.next);
 	},
 
 	askForName: function() {
@@ -52,7 +53,7 @@ var quiz = {
 		});
 	},
 
-	showQuestion: function() {
+	showQuestion: function(bookmark) {
 		quiz.element.innerHTML = "<h1>" + quiz.allQuestions[quiz.index]["question"] + "</h1>";
 
 		// create choices as radio inputs
@@ -82,8 +83,10 @@ var quiz = {
 			quiz.backButton.style.display = 'none';
 		}
 
-		// always show nextButton
-		quiz.nextButton.style.display = 'inline';
+		// show nextButton if user pressed backButton & has not returned to the question he left
+		if (quiz.index < bookmark) {
+			quiz.nextButton.style.display = 'inline';
+		}
 	},
 
 	next: function() {
@@ -106,8 +109,9 @@ var quiz = {
 	},
 
 	back: function() {
+		var bookmark = quiz.index;
 		quiz.index -= 1;
-		quiz.showQuestion();
+		quiz.showQuestion(bookmark);
 	},
 
 	showScores: function() {
@@ -160,11 +164,11 @@ quiz.getQuestions(function(questions) {
 quiz.element.addEventListener('click', function(e) {
 	if (e.target.tagName.toUpperCase() === "INPUT") {
 		var value = e.target.value;
-		quiz.allQuestions[quiz.index]['answer'] = value;		
+		quiz.allQuestions[quiz.index]['answer'] = value;	
+		quiz.next();	
 	}
 });
 
-quiz.nextButton.addEventListener('click', quiz.next);
 quiz.backButton.addEventListener('click', quiz.back);
 
 // check username to then either welcome user or ask user for name

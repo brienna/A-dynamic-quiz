@@ -2,11 +2,9 @@ body {
 	background-color: black;
 }
 
-div {
+div, form {
 	color: pink;
-}
 
-form {
 	/* To center the form on the page */
 	margin: 0 auto;
 	width: 400px;
@@ -14,6 +12,9 @@ form {
 	padding: 1em;
 	border: 1px solid #CCC;
 	border-radius: 1em;
+}
+
+form {
 	/* hidden unless username is not in localStorage or person wants to change */
 	display: none;
 }
