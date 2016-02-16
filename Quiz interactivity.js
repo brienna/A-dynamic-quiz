@@ -7,6 +7,7 @@ var quiz = {
 	nextButton: document.getElementById('nextButton'),
 	backButton: document.getElementById('backButton'),
 	nameChangeButton: document.getElementById('nameChangeButton'),
+	startButton: document.getElementById('startButton'),
 
 	getQuestions: function(callback) {
   		$.getJSON(quiz.url_questions, callback);
@@ -30,14 +31,17 @@ var quiz = {
 	welcome: function(name) {
 		// display welcome greeting for user
 		quiz.clearQuiz();
-		var greeting = document.createTextNode('Hello ' + name + '!');
+		var greeting = document.createElement('p');
+		var greetingText = document.createTextNode('Hello ' + name + '!');
+		greeting.appendChild(greetingText);
 		quiz.element.appendChild(greeting);
 		var buttonText = "Not " + name + "?";
 		quiz.nameChangeButton.textContent = buttonText;
 		quiz.nameChangeButton.addEventListener('click', quiz.askForName);
-		quiz.nameChangeButton.style.display = 'block';
-		quiz.nextButton.style.display = 'inline';
-		quiz.nextButton.addEventListener('click', quiz.next);
+		quiz.nameChangeButton.style.display = 'inline';
+		quiz.startButton.style.display = 'inline';
+		quiz.startButton.addEventListener('click', quiz.next);
+		quiz.nextButton.addEventListener('click', quiz.next);  // bind eventListener altho hidden
 	},
 
 	askForName: function() {
@@ -94,6 +98,7 @@ var quiz = {
 		// prevent user from proceeding without answering
 		if (quiz.index > -1) {
 			if (!quiz.answered()) {
+				console.log('no answer')
 				return;
 			}
 		}
@@ -134,6 +139,7 @@ var quiz = {
 		quiz.nameChangeButton.style.display = 'none';
 		quiz.nextButton.style.display = 'none';
 		quiz.backButton.style.display = 'none';
+		quiz.startButton.style.display = 'none';
 		while (quiz.element.firstChild) {
 			quiz.element.removeChild(quiz.element.firstChild);
 		}
